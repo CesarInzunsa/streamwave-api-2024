@@ -1,0 +1,50 @@
+type Movie {
+    id: ID!
+    title: String!
+    description: String!
+    subscriptionPackage: String!
+    imageUrl: String!
+    trailerUrl: String!
+    createdAt: String!
+}
+
+type User{
+    id: ID!
+    name: String!
+    email: String!
+    password: String!
+    subscriptionPackage: String!
+    createdAt: String!
+}
+
+type Query {
+    # GET ALL
+    getAllMoviesBySubscription(subscriptionPackage: String!): [Movie!]!
+    getAllUsers: [User!]!
+
+    # GET BY ID
+    getMovieById(id: ID!): Movie!
+    getUserById(id: ID!): User!
+}
+
+type Mutation {
+    # CREATE
+    createMovie(title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
+    createUser(name: String!, email: String!, password:String!, subscriptionPackage:String!): String!
+
+    # DELETE
+    deleteMovie(id: ID!): String!
+    deleteUser(id: ID!): String!
+
+    # UPDATE
+    updateMovie(id: ID!, title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
+    updateUser(id: ID!, name: String!, email: String!, password:String!, subscriptionPackage:String!): String!
+
+    # LOGIN
+    login(email: String!, password: String!): String!
+}
+
+type Subscription {
+    movieAdded: Movie!
+    userAdded: User!
+}
