@@ -67,7 +67,7 @@ let users = [
         email: 'example1@example.com',
         password: '123456',
         subscriptionPackage: 'BASICO',
-        createdAt: "02-05-2024"
+        createdAt: "2024-05-07T16:54:52.212Z"
     },
     {
         id: '8c5a1d9f7e4b36a0b2e7f5d8',
@@ -75,7 +75,7 @@ let users = [
         email: 'example2@example.com',
         password: '123456',
         subscriptionPackage: 'ESTANDAR',
-        createdAt: "02-05-2024"
+        createdAt: "2024-05-07T16:54:52.212Z"
     },
     {
         id: '9a7b3e4f8c6d2e1b5f9a0c47',
@@ -83,15 +83,19 @@ let users = [
         email: 'example3@example.com',
         password: '123456',
         subscriptionPackage: 'PREMIUM',
-        createdAt: "02-05-2024"
+        createdAt: "2024-05-07T16:54:52.212Z"
     }
 ];
 
 const MOVIE_ADDED = 'MOVIE_ADDED';
 const USER_ADDED = 'USER_ADDED';
+const BASIC_MOVIE_ADDED = 'BASIC_MOVIE_ADDED';
+const STANDARD_MOVIE_ADDED = 'STANDARD_MOVIE_ADDED';
+const PREMIUM_MOVIE_ADDED = 'PREMIUM_MOVIE_ADDED';
 
 const resolvers = {
     Query: {
+        // GET ALL
         getAllMoviesBySubscription: (root, args) => {
             // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
             if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
@@ -103,6 +107,7 @@ const resolvers = {
             // Retornar una copia profunda de todos los usuarios
             return JSON.parse(JSON.stringify(users));
         },
+        // GET BY ID
         getMovieById: (root, args) => {
             // Buscar y retornar una copia profunda de la película que coincida con él id
             return JSON.parse(JSON.stringify(movies.find(movie => movie.id === args.id)));
@@ -113,9 +118,8 @@ const resolvers = {
         }
     },
     Mutation: {
+        // CREATE
         createMovie: (root, args) => {
-            // Verificar que los argumentos proporcionados no estén vacíos
-            if (Object.values(args).some(value => value === '')) return 'Todos los campos son requeridos';
             // Verificar que la suscripción proporcionada sea 'BASICO', 'ESTANDAR' o 'PREMIUM'
             if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return 'El paquete de suscripción debe ser BASICO, ESTANDAR o PREMIUM';
             // Crear un nuevo objeto de tipo película
@@ -130,11 +134,106 @@ const resolvers = {
             };
             // Agregar la nueva película al arreglo de películas
             movies.push(newMovie);
-            // Publicar la película creada
+            // Publicar la película creada dependiendo del paquete de suscripción
+            switch (newMovie.subscriptionPackage) {
+                case 'BASICO':
+                    pubsub.publish(BASIC_MOVIE_ADDED, {basicMovieAdded: newMovie});
+                    break;
+                case 'ESTANDAR':
+                    pubsub.publish(STANDARD_MOVIE_ADDED, {standardMovieAdded: newMovie});
+                    break;
+                case 'PREMIUM':
+                    pubsub.publish(PREMIUM_MOVIE_ADDED, {premiumMovieAdded: newMovie});
+                    break;
+            }
+            // Sin importar el paquete de suscripción, publicar la película creada por defecto
             pubsub.publish(MOVIE_ADDED, {movieAdded: newMovie});
             // Retornar un mensaje de éxito
             return 'Película creada con éxito';
         },
+        createUser: (root, args) => {
+            // Verificar que la suscripción proporcionada sea 'BASICO', 'ESTANDAR' o 'PREMIUM'
+            if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return 'El paquete de suscripción debe ser BASICO, ESTANDAR o PREMIUM';
+            // Crear un nuevo objeto de tipo usuario
+            const newUser = {
+                id: generateId(),
+                name: args.name,
+                email: args.email,
+                password: args.password,
+                subscriptionPackage: args.subscriptionPackage,
+                createdAt: new Date().toISOString()
+            };
+            // Agregar el nuevo usuario al arreglo de usuarios
+            users.push(newUser);
+            // Publicar el usuario creado
+            pubsub.publish(USER_ADDED, {userAdded: newUser});
+            // Retornar un mensaje de éxito
+            return 'Usuario creado con éxito';
+        },
+        // DELETE
+        deleteMovie: (root, args) => {
+            // Buscar el índice de la película que coincida con él id, si no existe retornar un mensaje de error
+            const index = movies.findIndex(movie => movie.id === args.id);
+            if (index === -1) return 'La película no existe';
+            // Filtrar todas las películas a excepción de la que se quiere eliminar, y actualizar la lista de películas
+            movies = JSON.parse(JSON.stringify(movies.filter(movie => movie.id !== args.id)));
+            // Retornar un mensaje de éxito
+            return 'Película eliminada con éxito';
+        },
+        deleteUser: (root, args) => {
+            // Buscar el índice del usuario que coincida con él id, si no existe retornar un mensaje de error
+            const index = users.findIndex(user => user.id === args.id);
+            if (index === -1) return 'El usuario no existe';
+            // Filtrar todos los usuarios a excepción del que se quiere eliminar, y actualizar la lista de usuarios
+            users = JSON.parse(JSON.stringify(users.filter(user => user.id !== args.id)));
+            // Retornar un mensaje de éxito
+            return 'Usuario eliminado con éxito';
+        },
+        // UPDATE
+        updateMovie: (root, args) => {
+            // Buscar el índice de la película que coincida con él id, si no existe retornar un mensaje de error
+            const index = movies.findIndex(movie => movie.id === args.id);
+            if (index === -1) return 'La película no existe';
+            // Obtener la información de los argumentos
+            const {title, description, subscriptionPackage, imageUrl, trailerUrl} = args;
+            // Actualizar la información de la película
+            movies[index] = {
+                ...movies[index],
+                title: title || movies[index].title,
+                description: description || movies[index].description,
+                subscriptionPackage: subscriptionPackage || movies[index].subscriptionPackage,
+                imageUrl: imageUrl || movies[index].imageUrl,
+                trailerUrl: trailerUrl || movies[index].trailerUrl
+            };
+            // Retornar un mensaje de éxito
+            return 'Película actualizada con éxito';
+        },
+        updateUser: (root, args) => {
+            // Buscar el índice del usuario que coincida con él id, si no existe retornar un mensaje de error
+            const index = users.findIndex(user => user.id === args.id);
+            if (index === -1) return 'El usuario no existe';
+            // Obtener la información de los argumentos
+            const {name, email, password, subscriptionPackage} = args;
+            // Actualizar la información del usuario
+            users[index] = {
+                ...users[index],
+                name: name || users[index].name,
+                email: email || users[index].email,
+                password: password || users[index].password,
+                subscriptionPackage: subscriptionPackage || users[index].subscriptionPackage
+            };
+            // Retornar un mensaje de éxito
+            return 'Usuario actualizado con éxito';
+        },
+        // LOGIN
+        login: (root, args) => {
+            // Buscar un usuario que coincida con el email y la contraseña proporcionados
+            const user = users.find(user => user.email === args.email && user.password === args.password);
+            // Si no se encuentra un usuario, retornar un mensaje de error
+            if (!user) return 'Credenciales incorrectas';
+            // Retornar el usuario encontrado
+            return user;
+        }
     },
     Subscription: {
         movieAdded: {
@@ -142,6 +241,27 @@ const resolvers = {
             resolve: (payload) => {
                 // Retornar la película que acaba de ser creada
                 return payload.movieAdded;
+            }
+        },
+        basicMovieAdded: {
+            subscribe: () => pubsub.asyncIterator([BASIC_MOVIE_ADDED]),
+            resolve: (payload) => {
+                // Retornar la película que acaba de ser creada, si el paquete de suscripción es 'BASICO'
+                return payload.basicMovieAdded;
+            }
+        },
+        standardMovieAdded:{
+            subscribe: () => pubsub.asyncIterator([STANDARD_MOVIE_ADDED]),
+            resolve: (payload) => {
+                // Retornar la película que acaba de ser creada, si el paquete de suscripción es 'ESTANDAR'
+                return payload.standardMovieAdded;
+            }
+        },
+        premiumMovieAdded:{
+            subscribe: () => pubsub.asyncIterator([PREMIUM_MOVIE_ADDED]),
+            resolve: (payload) => {
+                // Retornar la película que acaba de ser creada, si el paquete de suscripción es 'PREMIUM'
+                return payload.premiumMovieAdded;
             }
         },
         userAdded: {

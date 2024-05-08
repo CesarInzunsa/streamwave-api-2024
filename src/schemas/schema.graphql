@@ -45,6 +45,9 @@ type Mutation {
 }
 
 type Subscription {
+    basicMovieAdded: Movie!
+    standardMovieAdded: Movie!
+    premiumMovieAdded: Movie!
     movieAdded: Movie!
     userAdded: User!
 }
