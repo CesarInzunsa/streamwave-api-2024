@@ -37,26 +37,35 @@ let movies = [
         title: 'Harry Potter and the Philosopher\'s Stone',
         description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
         subscriptionPackage: 'BASICO',
-        imageUrl: 'https://m.media-amazon.com/images/I/51ZPj3n6yHL._AC_.jpg',
-        trailerUrl: 'https://www.youtube.com/watch?v=VyHV0BRtdxo',
+        imageUrl: 'https://th.bing.com/th/id/OIP.eGj4A1QtOZ-xrhWhups6BwHaEK?rs=1&pid=ImgDetMain',
+        trailerUrl: 'VyHV0BRtdxo',
         createdAt: "2024-05-07T16:54:52.212Z"
     },
     {
         id: '6d48b5fa07e3c9a2f1e48d53',
         title: 'Harry Potter and the Philosopher\'s Stone',
         description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
-        subscriptionPackage: 'ESTANDAR',
-        imageUrl: 'https://m.media-amazon.com/images/I/51ZPj3n6yHL._AC_.jpg',
-        trailerUrl: 'https://www.youtube.com/watch?v=VyHV0BRtdxo',
+        subscriptionPackage: 'BASICO',
+        imageUrl: 'https://i.ebayimg.com/images/g/dEUAAOSwECtkD628/s-l1200.webp',
+        trailerUrl: 'VyHV0BRtdxo',
         createdAt: "2024-05-07T16:54:52.212Z"
     },
     {
         id: 'e2f5a394d7b68e1c40b9a82f',
         title: 'Harry Potter and the Philosopher\'s Stone',
         description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
-        subscriptionPackage: 'PREMIUM',
-        imageUrl: 'https://m.media-amazon.com/images/I/51ZPj3n6yHL._AC_.jpg',
-        trailerUrl: 'https://www.youtube.com/watch?v=VyHV0BRtdxo',
+        subscriptionPackage: 'BASICO',
+        imageUrl: 'https://img.buzzfeed.com/buzzfeed-static/complex/images/gdv2pu6io6ekpg5r8mta/back-to-the-future.jpg?output-format=jpg&output-quality=auto',
+        trailerUrl: 'VyHV0BRtdxo',
+        createdAt: "2024-05-07T16:54:52.212Z"
+    },
+    {
+        id: 'e2f5a394d7b48e1c40b9a82f',
+        title: 'Harry Potter and the Philosopher\'s Stone',
+        description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
+        subscriptionPackage: 'BASICO',
+        imageUrl: 'https://artofthemovies.co.uk/cdn/shop/files/IMG_4154_1-780453_de0cc110-550d-4448-a7ec-d3ff945c0739.jpg?v=1696169470',
+        trailerUrl: 'VyHV0BRtdxo',
         createdAt: "2024-05-07T16:54:52.212Z"
     }
 ];
