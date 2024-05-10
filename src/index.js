@@ -11,6 +11,7 @@ import {PubSub} from 'graphql-subscriptions';
 import {readFileSync} from 'fs';
 import {makeExecutableSchema} from '@graphql-tools/schema';
 import {v4 as uuidv4} from 'uuid';
+import cors from 'cors';
 
 // |----------------------------------------------------------------------------------------------------------------|
 // |                                                                                                                |
@@ -278,6 +279,7 @@ const schema = makeExecutableSchema({typeDefs, resolvers});
 
 const app = express();
 const httpServer = createServer(app);
+app.use(cors());
 
 const wsServer = new WebSocketServer({
     server: httpServer,
