@@ -1,18 +1,18 @@
 // Importar las dependencias necesarias
-import {ApolloServer} from '@apollo/server';
-import {createServer} from 'http';
-import {expressMiddleware} from '@apollo/server/express4';
-import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer';
+import { ApolloServer } from '@apollo/server';
+import { createServer } from 'http';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import bodyParser from 'body-parser';
 import express from 'express';
-import {WebSocketServer} from 'ws';
-import {useServer} from 'graphql-ws/lib/use/ws';
-import {PubSub} from 'graphql-subscriptions';
-import {readFileSync} from 'fs';
-import {makeExecutableSchema} from '@graphql-tools/schema';
-import {v4 as uuidv4} from 'uuid';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { PubSub } from 'graphql-subscriptions';
+import { readFileSync } from 'fs';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
-import {ApolloServerErrorCode} from '@apollo/server/errors';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
 
 // |----------------------------------------------------------------------------------------------------------------|
 // |                                                                                                                |
@@ -37,6 +37,7 @@ let movies = [
         id: '3faedc9b7e8104a5b623c129',
         title: 'Harry Potter and the Philosopher\'s Stone',
         description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
+        category: 'Drama',
         subscriptionPackage: 'BASICO',
         imageUrl: 'https://th.bing.com/th/id/OIP.eGj4A1QtOZ-xrhWhups6BwHaEK?rs=1&pid=ImgDetMain',
         trailerUrl: 'VyHV0BRtdxo',
@@ -44,31 +45,14 @@ let movies = [
     },
     {
         id: '6d48b5fa07e3c9a2f1e48d53',
-        title: 'Harry Potter and the Philosopher\'s Stone',
-        description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
+        title: 'El pianista',
+        description: 'Wladyslaw Szpilman, un brillante pianista polaco de origen judío, vive con su familia en el ghetto de Varsovia. Cuando, en 1939, los alemanes invaden Polonia, consigue evitar la deportación gracias a la ayuda de algunos amigos.',
+        category: 'Drama',
         subscriptionPackage: 'BASICO',
-        imageUrl: 'https://i.ebayimg.com/images/g/dEUAAOSwECtkD628/s-l1200.webp',
-        trailerUrl: 'VyHV0BRtdxo',
+        imageUrl: 'https://th.bing.com/th/id/OIP.eGj4A1QtOZ-xrhWhups6BwHaEK?rs=1&pid=ImgDetMain',
+        trailerUrl: 'BFwGqLa_oAo',
         createdAt: "2024-05-07T16:54:52.212Z"
     },
-    {
-        id: 'e2f5a394d7b68e1c40b9a82f',
-        title: 'Harry Potter and the Philosopher\'s Stone',
-        description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
-        subscriptionPackage: 'BASICO',
-        imageUrl: 'https://img.buzzfeed.com/buzzfeed-static/complex/images/gdv2pu6io6ekpg5r8mta/back-to-the-future.jpg?output-format=jpg&output-quality=auto',
-        trailerUrl: 'VyHV0BRtdxo',
-        createdAt: "2024-05-07T16:54:52.212Z"
-    },
-    {
-        id: 'e2f5a394d7b48e1c40b9a82f',
-        title: 'Harry Potter and the Philosopher\'s Stone',
-        description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
-        subscriptionPackage: 'BASICO',
-        imageUrl: 'https://artofthemovies.co.uk/cdn/shop/files/IMG_4154_1-780453_de0cc110-550d-4448-a7ec-d3ff945c0739.jpg?v=1696169470',
-        trailerUrl: 'VyHV0BRtdxo',
-        createdAt: "2024-05-07T16:54:52.212Z"
-    }
 ];
 
 let users = [
@@ -110,7 +94,6 @@ const PREMIUM_MOVIE_ADDED = 'PREMIUM_MOVIE_ADDED';
 const resolvers = {
     Query: {
         // GET ALL
-        // GET ALL MOVIES BY SUBSCRIPTION PACKAGE
         getAllMoviesBySubscription: (root, args) => {
             try {
                 // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
@@ -171,17 +154,17 @@ const resolvers = {
             // Publicar la película creada dependiendo del paquete de suscripción
             switch (newMovie.subscriptionPackage) {
                 case 'BASICO':
-                    pubsub.publish(BASIC_MOVIE_ADDED, {basicMovieAdded: newMovie});
+                    pubsub.publish(BASIC_MOVIE_ADDED, { basicMovieAdded: newMovie });
                     break;
                 case 'ESTANDAR':
-                    pubsub.publish(STANDARD_MOVIE_ADDED, {standardMovieAdded: newMovie});
+                    pubsub.publish(STANDARD_MOVIE_ADDED, { standardMovieAdded: newMovie });
                     break;
                 case 'PREMIUM':
-                    pubsub.publish(PREMIUM_MOVIE_ADDED, {premiumMovieAdded: newMovie});
+                    pubsub.publish(PREMIUM_MOVIE_ADDED, { premiumMovieAdded: newMovie });
                     break;
             }
             // Sin importar el paquete de suscripción, publicar la película creada por defecto
-            pubsub.publish(MOVIE_ADDED, {movieAdded: newMovie});
+            pubsub.publish(MOVIE_ADDED, { movieAdded: newMovie });
             // Retornar un mensaje de éxito
             return 'Película creada con éxito';
         },
@@ -208,7 +191,7 @@ const resolvers = {
             // Agregar el nuevo usuario al arreglo de usuarios
             users.push(newUser);
             // Publicar el usuario creado
-            pubsub.publish(USER_ADDED, {userAdded: newUser});
+            pubsub.publish(USER_ADDED, { userAdded: newUser });
             // Retornar un mensaje de éxito
             return 'Usuario creado con éxito';
         },
@@ -237,7 +220,7 @@ const resolvers = {
             const index = movies.findIndex(movie => movie.id === args.id);
             if (index === -1) return 'La película no existe';
             // Obtener la información de los argumentos
-            const {title, description, subscriptionPackage, imageUrl, trailerUrl} = args;
+            const { title, description, subscriptionPackage, imageUrl, trailerUrl } = args;
             // Actualizar la información de la película
             movies[index] = {
                 ...movies[index],
@@ -255,7 +238,7 @@ const resolvers = {
             const index = users.findIndex(user => user.id === args.id);
             if (index === -1) return 'El usuario no existe';
             // Obtener la información de los argumentos
-            const {name, email, password, subscriptionPackage} = args;
+            const { name, email, password, subscriptionPackage } = args;
             // Actualizar la información del usuario
             users[index] = {
                 ...users[index],
@@ -316,7 +299,7 @@ const resolvers = {
     },
 }
 
-const schema = makeExecutableSchema({typeDefs, resolvers});
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const app = express();
 const httpServer = createServer(app);
@@ -327,13 +310,13 @@ const wsServer = new WebSocketServer({
     path: '/graphql'
 });
 
-const wsServerCleanup = useServer({schema}, wsServer);
+const wsServerCleanup = useServer({ schema }, wsServer);
 
 const apolloServer = new ApolloServer({
     schema,
     plugins: [
         // Proper shutdown for the HTTP server.
-        ApolloServerPluginDrainHttpServer({httpServer}),
+        ApolloServerPluginDrainHttpServer({ httpServer }),
 
         // Proper shutdown for the WebSocket server.
         {

@@ -2,6 +2,7 @@ type Movie {
     id: ID!
     title: String!
     description: String!
+    category: String!
     subscriptionPackage: String!
     imageUrl: String!
     trailerUrl: String!
@@ -33,17 +34,9 @@ type Query {
 }
 
 type Mutation {
-<<<<<<< HEAD
     # CREATE
-    createMovie(title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
+    createMovie(title: String!, description: String!, category: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
     createUser(name: String!, email: String!, password:String!, type:String!, subscriptionPackage:String!): String!
-=======
-    # CREATE MOVIE
-    createMovie(title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl: String!): String!
->>>>>>> 91806e52288f379283c2388642bc05ce87b7a997
-
-    # CREATE USER
-    createUser(name: String!, email: String!, password: String!, subscriptionPackage: String!): String!
 
     # DELETE MOVIE
     deleteMovie(id: ID!): String!
@@ -52,7 +45,7 @@ type Mutation {
     deleteUser(id: ID!): String!
 
     # UPDATE MOVIE
-    updateMovie(id: ID!, title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl: String!): String!
+    updateMovie(id: ID!, title: String!, description: String!, category: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl: String!): String!
 
     # UPDATE USER
     updateUser(id: ID!, name: String!, email: String!, password: String!, subscriptionPackage: String!): String!
