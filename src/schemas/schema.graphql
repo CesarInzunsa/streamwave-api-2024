@@ -8,7 +8,7 @@ type Movie {
     createdAt: String!
 }
 
-type User{
+type User {
     id: ID!
     name: String!
     email: String!
@@ -18,27 +18,37 @@ type User{
 }
 
 type Query {
-    # GET ALL
+    # GET ALL MOVIES BY SUBSCRIPTION PACKAGE
     getAllMoviesBySubscription(subscriptionPackage: String!): [Movie!]!
+
+    # GET ALL USERS
     getAllUsers: [User!]!
 
-    # GET BY ID
+    # GET MOVIE BY ID
     getMovieById(id: ID!): Movie!
+
+    # GET USER BY ID
     getUserById(id: ID!): User!
 }
 
 type Mutation {
-    # CREATE
-    createMovie(title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
-    createUser(name: String!, email: String!, password:String!, subscriptionPackage:String!): String!
+    # CREATE MOVIE
+    createMovie(title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl: String!): String!
 
-    # DELETE
+    # CREATE USER
+    createUser(name: String!, email: String!, password: String!, subscriptionPackage: String!): String!
+
+    # DELETE MOVIE
     deleteMovie(id: ID!): String!
+
+    # DELETE USER
     deleteUser(id: ID!): String!
 
-    # UPDATE
-    updateMovie(id: ID!, title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
-    updateUser(id: ID!, name: String!, email: String!, password:String!, subscriptionPackage:String!): String!
+    # UPDATE MOVIE
+    updateMovie(id: ID!, title: String!, description: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl: String!): String!
+
+    # UPDATE USER
+    updateUser(id: ID!, name: String!, email: String!, password: String!, subscriptionPackage: String!): String!
 
     # LOGIN
     login(email: String!, password: String!): String!

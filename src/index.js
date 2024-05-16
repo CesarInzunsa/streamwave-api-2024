@@ -106,12 +106,18 @@ const PREMIUM_MOVIE_ADDED = 'PREMIUM_MOVIE_ADDED';
 const resolvers = {
     Query: {
         // GET ALL
+        // GET ALL MOVIES BY SUBSCRIPTION PACKAGE
         getAllMoviesBySubscription: (root, args) => {
-            // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
-            if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
+            const { subscriptionPackage } = args;
 
-            // Retornar una copia profunda de las películas que coincidan con el subscriptionPackage
-            return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
+            // Validar que el subscriptionPackage sea uno de 'BASICO', 'ESTANDAR', o 'PREMIUM'
+            if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(subscriptionPackage)) {
+                throw new Error('El paquete de suscripción no es válido');
+            }
+
+            // Filtrar y retornar las películas que coincidan con el subscriptionPackage
+            const filteredMovies = movies.filter(movie => movie.subscriptionPackage === subscriptionPackage);
+            return filteredMovies;
         },
         getAllUsers: () => {
             // Retornar una copia profunda de todos los usuarios
@@ -125,6 +131,9 @@ const resolvers = {
         getUserById: (root, args) => {
             // Buscar y retornar una copia profunda del usuario que coincida con él id
             return JSON.parse(JSON.stringify(users.find(user => user.id === args.id)));
+        },
+        getAllMoviesBySubscription: (root, args) => {
+            return movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage);
         }
     },
     Mutation: {
