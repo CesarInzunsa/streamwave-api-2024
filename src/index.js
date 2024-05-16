@@ -110,6 +110,7 @@ const PREMIUM_MOVIE_ADDED = 'PREMIUM_MOVIE_ADDED';
 const resolvers = {
     Query: {
         // GET ALL
+        // GET ALL MOVIES BY SUBSCRIPTION PACKAGE
         getAllMoviesBySubscription: (root, args) => {
             try {
                 // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
