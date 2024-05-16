@@ -12,6 +12,7 @@ import {readFileSync} from 'fs';
 import {makeExecutableSchema} from '@graphql-tools/schema';
 import {v4 as uuidv4} from 'uuid';
 import cors from 'cors';
+import {ApolloServerErrorCode} from '@apollo/server/errors';
 
 // |----------------------------------------------------------------------------------------------------------------|
 // |                                                                                                                |
@@ -73,26 +74,29 @@ let movies = [
 let users = [
     {
         id: 'b7d4e3a8f6c90e4b1f25d63a',
-        name: 'John Doe',
+        name: 'Brandon',
         email: 'example1@example.com',
         password: '123456',
         subscriptionPackage: 'BASICO',
+        type: 'USER',
         createdAt: "2024-05-07T16:54:52.212Z"
     },
     {
         id: '8c5a1d9f7e4b36a0b2e7f5d8',
-        name: 'John Doe',
+        name: 'Alan',
         email: 'example2@example.com',
         password: '123456',
         subscriptionPackage: 'ESTANDAR',
+        type: 'USER',
         createdAt: "2024-05-07T16:54:52.212Z"
     },
     {
         id: '9a7b3e4f8c6d2e1b5f9a0c47',
-        name: 'John Doe',
+        name: 'Juanito',
         email: 'example3@example.com',
         password: '123456',
         subscriptionPackage: 'PREMIUM',
+        type: 'ADMIN',
         createdAt: "2024-05-07T16:54:52.212Z"
     }
 ];
@@ -107,29 +111,48 @@ const resolvers = {
     Query: {
         // GET ALL
         getAllMoviesBySubscription: (root, args) => {
-            // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
-            if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
+            try {
+                // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
+                if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
 
-            // Retornar una copia profunda de las películas que coincidan con el subscriptionPackage
-            return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
+                // Retornar una copia profunda de las películas que coincidan con el subscriptionPackage
+                return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
+            } catch (error) {
+                console.log(error);
+            }
         },
         getAllUsers: () => {
-            // Retornar una copia profunda de todos los usuarios
-            return JSON.parse(JSON.stringify(users));
+            try {
+                // Retornar una copia profunda de todos los usuarios
+                return JSON.parse(JSON.stringify(users));
+            } catch (error) {
+                console.log(error);
+            }
         },
         // GET BY ID
         getMovieById: (root, args) => {
-            // Buscar y retornar una copia profunda de la película que coincida con él id
-            return JSON.parse(JSON.stringify(movies.find(movie => movie.id === args.id)));
+            try {
+                // Buscar y retornar una copia profunda de la película que coincida con él id
+                return JSON.parse(JSON.stringify(movies.find(movie => movie.id === args.id)));
+            } catch (error) {
+                console.log(error);
+            }
         },
         getUserById: (root, args) => {
-            // Buscar y retornar una copia profunda del usuario que coincida con él id
-            return JSON.parse(JSON.stringify(users.find(user => user.id === args.id)));
+            try {
+                // Buscar y retornar una copia profunda del usuario que coincida con él id
+                return JSON.parse(JSON.stringify(users.find(user => user.id === args.id)));
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
     Mutation: {
         // CREATE
         createMovie: (root, args) => {
+            // Verificar que los campos title, description, imageUrl y trailerUrl no estén vacíos
+            if (args.title === '' || args.description === '' || args.imageUrl === '' || args.trailerUrl === '') return 'Los campos title, description, imageUrl y trailerUrl son obligatorios';
+
             // Verificar que la suscripción proporcionada sea 'BASICO', 'ESTANDAR' o 'PREMIUM'
             if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return 'El paquete de suscripción debe ser BASICO, ESTANDAR o PREMIUM';
             // Crear un nuevo objeto de tipo película
@@ -164,6 +187,13 @@ const resolvers = {
         createUser: (root, args) => {
             // Verificar que la suscripción proporcionada sea 'BASICO', 'ESTANDAR' o 'PREMIUM'
             if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return 'El paquete de suscripción debe ser BASICO, ESTANDAR o PREMIUM';
+
+            // Verificar que el tipo de usuario sea 'USER' o 'ADMIN'
+            if (!['USER', 'ADMIN'].includes(args.type)) return 'El tipo de usuario debe ser USER o ADMIN';
+
+            // Verificar que el email no se repita
+            if (users.find(user => user.email === args.email)) return 'El email ya está en uso';
+
             // Crear un nuevo objeto de tipo usuario
             const newUser = {
                 id: generateId(),
@@ -171,6 +201,7 @@ const resolvers = {
                 email: args.email,
                 password: args.password,
                 subscriptionPackage: args.subscriptionPackage,
+                type: args.type,
                 createdAt: new Date().toISOString()
             };
             // Agregar el nuevo usuario al arreglo de usuarios
@@ -260,14 +291,14 @@ const resolvers = {
                 return payload.basicMovieAdded;
             }
         },
-        standardMovieAdded:{
+        standardMovieAdded: {
             subscribe: () => pubsub.asyncIterator([STANDARD_MOVIE_ADDED]),
             resolve: (payload) => {
                 // Retornar la película que acaba de ser creada, si el paquete de suscripción es 'ESTANDAR'
                 return payload.standardMovieAdded;
             }
         },
-        premiumMovieAdded:{
+        premiumMovieAdded: {
             subscribe: () => pubsub.asyncIterator([PREMIUM_MOVIE_ADDED]),
             resolve: (payload) => {
                 // Retornar la película que acaba de ser creada, si el paquete de suscripción es 'PREMIUM'
@@ -313,7 +344,24 @@ const apolloServer = new ApolloServer({
                 }
             }
         }
-    ]
+    ],
+    formatError: (formattedError, error) => {
+        // Return a different error message
+        if (
+            formattedError.extensions.code ===
+            ApolloServerErrorCode.GRAPHQL_VALIDATION_FAILED || formattedError.extensions.code === ApolloServerErrorCode.GRAPHQL_PARSE_FAILED || formattedError.extensions.code === ApolloServerErrorCode.BAD_USER_INPUT
+        ) {
+            return {
+                //...formattedError,
+                message: "Ocurrio un error en el query de GraphQL, por favor revisa la documentación de la API",
+                location: formattedError.locations
+            };
+        }
+
+        // Otherwise return the formatted error. This error can also
+        // be manipulated in other ways, as long as it's returned.
+        return formattedError;
+    },
 });
 
 await apolloServer.start();
