@@ -37,11 +37,11 @@
     let movies = [
         {
             id: '3faedc9b7e8104a5b623c129',
-            title: 'Harry Potter and the Philosopher\'s Stone',
-            description: 'Harry Potter has lived under the stairs at his aunt and uncle\'s house his whole life. But on his 11th birthday, he learns he\'s a powerful wizard -- with a place waiting for him at the Hogwarts School of Witchcraft and Wizardry.',
+            title: 'Harry Potter y la piedra filosofal',
+            description: 'Harry Potter ha vivido debajo de las escaleras en la casa de sus tíos toda su vida. Pero en su undécimo cumpleaños, descubre que es un poderoso mago y que tiene un lugar esperándolo en el Colegio Hogwarts de Magia y Hechicería.',
             category: 'Drama',
             subscriptionPackage: 'BASICO',
-            imageUrl: 'https://th.bing.com/th/id/OIP.eGj4A1QtOZ-xrhWhups6BwHaEK?rs=1&pid=ImgDetMain',
+            imageUrl: 'https://picsum.photos/id/237/600/400',
             trailerUrl: 'VyHV0BRtdxo',
             createdAt: "2024-05-07T16:54:52.212Z"
         },
@@ -51,10 +51,50 @@
             description: 'Wladyslaw Szpilman, un brillante pianista polaco de origen judío, vive con su familia en el ghetto de Varsovia. Cuando, en 1939, los alemanes invaden Polonia, consigue evitar la deportación gracias a la ayuda de algunos amigos.',
             category: 'Drama',
             subscriptionPackage: 'BASICO',
-            imageUrl: 'https://th.bing.com/th/id/OIP.eGj4A1QtOZ-xrhWhups6BwHaEK?rs=1&pid=ImgDetMain',
+            imageUrl: 'https://picsum.photos/id/238/600/400',
             trailerUrl: 'BFwGqLa_oAo',
             createdAt: "2024-05-07T16:54:52.212Z"
         },
+        {
+            id: '8a32d7fc09e5c9b4f2e59d87',
+            title: 'El irlandés',
+            description: 'Frank Sheeran, un veterano de guerra y estafador convertido en asesino a sueldo, reflexiona sobre los eventos que definieron su carrera en el crimen organizado, incluyendo su relación con el legendario jefe del sindicato Jimmy Hoffa.',
+            category: 'Crimen',
+            subscriptionPackage: 'ESTANDAR',
+            imageUrl: 'https://picsum.photos/id/239/600/400',
+            trailerUrl: 'B3cJXk9IaH0',
+            createdAt: "2024-05-22T11:45:00.000Z"
+        },
+        {
+            id: '7f23c7eb08d4a9b3e4f68d79',
+            title: 'Baby Driver',
+            description: 'Baby domina el volante como nadie antes lo ha hecho, pero su habilidad está en manos de Doc, el jefe del crimen para el que trabaja. Cansado de ese estilo de vida y de cumplir las normas de este atracador, el joven decide cumplir una última misión antes de retirarse. Pero Doc no se lo va a poner fácil, y menos después de saber que Baby siente algo por una joven llamada Deborah.',
+            category: 'Accion',
+            subscriptionPackage: 'PREMIUM',
+            imageUrl: 'https://picsum.photos/id/240/600/400',
+            trailerUrl: '4lc8FxXukcU',
+            createdAt: "2024-05-22T10:30:00.000Z"
+        },
+        {
+            id: '8g24d8fc09e5b9c4f5g79e80',
+            title: 'Annabelle',
+            description: 'John Form ha encontrado el regalo perfecto para su esposa embarazada, Mia: una hermosa muñeca vintage con un vestido de boda blanco puro. Pero la alegría de Mia con Annabelle no dura mucho. En una horrible noche, su hogar es invadido por miembros de un culto satánico, quienes atacan violentamente a la pareja. Derramando sangre y dejando terror tras de sí, los cultistas han conjurado una entidad malévola en la forma de Annabelle.',
+            category: 'Terror',
+            subscriptionPackage: 'PREMIUM',
+            imageUrl: 'https://picsum.photos/id/241/600/400',
+            trailerUrl: 'R-StM2rHAc8',
+            createdAt: "2024-05-22T10:30:00.000Z"
+        },
+        {
+            id: '9h25e9gd10f6c0d5g6h80f91',
+            title: 'Superbad',
+            description: 'Seth y Evan son dos adolescentes inseparables que están a punto de graduarse de la escuela secundaria. Decididos a aprovechar al máximo sus últimos días como estudiantes, planean asistir a una fiesta épica. Pero sus planes se complican cuando se enfrentan a una serie de obstáculos ridículos y situaciones hilarantes en su intento por conseguir alcohol para la fiesta. A lo largo de la noche, Seth y Evan descubren el verdadero significado de la amistad.',
+            category: 'Comedia',
+            subscriptionPackage: 'PREMIUM',
+            imageUrl: 'https://picsum.photos/id/242/600/400',
+            trailerUrl: '4eaZ_48ZYog',
+            createdAt: "2024-05-22T10:30:00.000Z"
+        }
     ];
 
     let users = [
@@ -101,8 +141,48 @@
                     // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
                     if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
 
-                    // Retornar una copia profunda de las películas que coincidan con el subscriptionPackage
-                    return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
+                    // Si el plan de suscripción es 'BASICO', retornar una copia profunda de las películas que coincidan con el subscriptionPackage
+                    if (args.subscriptionPackage === 'BASICO') {
+                        return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === 'BASICO')));
+                    }
+
+                    // Si el plan de suscripción es 'ESTANDAR', retornar una copia profunda de las películas que coincidan con el subscriptionPackage y 'BASICO'
+                    if (args.subscriptionPackage === 'ESTANDAR') {
+                        return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === 'BASICO' || movie.subscriptionPackage === 'ESTANDAR')));
+                    }
+
+                    // Si el plan de suscripción es 'PREMIUM', retornar una copia profunda de todas las películas
+                    return JSON.parse(JSON.stringify(movies));
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            getMoviesByCategory: (root, args) => {
+                try {
+
+                    // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
+                    if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
+
+                    // Obtener todas las peliculas que coincidan con el plan de suscripción
+                    let moviesTemp = [];
+
+                    // Si el plan de suscripción es 'BASICO', retornar una copia profunda de las películas que coincidan con el subscriptionPackage
+                    if (args.subscriptionPackage === 'BASICO') {
+                        moviesTemp = JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === 'BASICO')));
+                    }
+
+                    // Si el plan de suscripción es 'ESTANDAR', retornar una copia profunda de las películas que coincidan con el subscriptionPackage y 'BASICO'
+                    if (args.subscriptionPackage === 'ESTANDAR') {
+                        moviesTemp = JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === 'BASICO' || movie.subscriptionPackage === 'ESTANDAR')));
+                    }
+
+                    // Retornar una copia profunda de las películas que coincidan con la categoría proporcionada
+                    if (args.subscriptionPackage === 'PREMIUM') {
+                        moviesTemp = JSON.parse(JSON.stringify(movies));
+                    }
+
+                    // Retornar una copia profunda de las películas que coincidan con la categoría proporcionada
+                    return JSON.parse(JSON.stringify(moviesTemp.filter(movie => movie.category === args.category)));
                 } catch (error) {
                     console.log(error);
                 }
