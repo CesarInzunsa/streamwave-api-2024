@@ -23,6 +23,9 @@ type Query {
     # GET ALL MOVIES BY SUBSCRIPTION PACKAGE
     getAllMoviesBySubscription(subscriptionPackage: String!): [Movie!]!
 
+    # GTE ALL MOVIES BY SUBSCRIPTION PACKAGE AND CATEGORY
+    getMoviesByCategory(category: String!, subscriptionPackage: String!): [Movie!]!
+
     # GET ALL USERS
     getAllUsers: [User!]!
 
