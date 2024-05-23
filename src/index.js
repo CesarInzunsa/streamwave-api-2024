@@ -5,7 +5,7 @@
     import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
     import bodyParser from 'body-parser';
     import express from 'express';
-    import { WebSocketServer } from 'ws';
+    import { WebSocketServer, WebSocket } from 'ws';
     import { useServer } from 'graphql-ws/lib/use/ws';
     import { PubSub } from 'graphql-subscriptions';
     import { readFileSync } from 'fs';
@@ -226,6 +226,7 @@
                     id: generateId(),
                     title: args.title,
                     description: args.description,
+                    category: args.category,
                     subscriptionPackage: args.subscriptionPackage,
                     imageUrl: args.imageUrl,
                     trailerUrl: args.trailerUrl,
@@ -305,12 +306,13 @@
                 const index = movies.findIndex(movie => movie.id === args.id);
                 if (index === -1) return 'La película no existe';
                 // Obtener la información de los argumentos
-                const { title, description, subscriptionPackage, imageUrl, trailerUrl } = args;
+                const { title, description, category, subscriptionPackage, imageUrl, trailerUrl } = args;
                 // Actualizar la información de la película
                 movies[index] = {
                     ...movies[index],
                     title: title || movies[index].title,
                     description: description || movies[index].description,
+                    category: category || movies[index].category,
                     subscriptionPackage: subscriptionPackage || movies[index].subscriptionPackage,
                     imageUrl: imageUrl || movies[index].imageUrl,
                     trailerUrl: trailerUrl || movies[index].trailerUrl
@@ -409,6 +411,20 @@
     const wsServer = new WebSocketServer({
         server: httpServer,
         path: '/graphql'
+    });
+
+    wsServer.on('connection', ws => {
+        console.log('A new WebSocket connection has been established');
+        ws.on('open', () => {
+            console.log('The WebSocket connection is open');
+          });
+        ws.on('message', message => {
+            console.log(`Received message => ${message}`);
+          });
+        ws.on('close', (code, reason) => {
+            console.log(`WebSocket connection closed with code ${code} and reason: ${reason}`);
+        });
+
     });
 
     const wsServerCleanup = useServer({ schema }, wsServer);
