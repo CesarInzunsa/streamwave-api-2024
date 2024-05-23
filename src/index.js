@@ -14,6 +14,8 @@
     import cors from 'cors';
     import { ApolloServerErrorCode } from '@apollo/server/errors';
     import bcrypt from 'bcryptjs';
+    import { Pelicula, Usuario } from './db.js';
+
 
 
     // |----------------------------------------------------------------------------------------------------------------|
@@ -96,38 +98,51 @@
     const resolvers = {
         Query: {
             // GET ALL
-            getAllMoviesBySubscription: (root, args) => {
+            getAllMoviesBySubscription: async (root, args) => {
                 try {
                     // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
                     if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
 
                     // Retornar una copia profunda de las películas que coincidan con el subscriptionPackage
-                    return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
+                    //return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
+                    return await Pelicula.find({ subscriptionPackage: args.subscriptionPackage });
                 } catch (error) {
                     console.log(error);
                 }
             },
-            getAllUsers: () => {
+            getAllUsers: async () => {
                 try {
                     // Retornar una copia profunda de todos los usuarios
-                    return JSON.parse(JSON.stringify(users));
+                   // return JSON.parse(JSON.stringify(users));
+                    return await Usuario.find();
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            getAllMovies: async () => {
+                try {
+                    // Retornar una copia profunda de todos los usuarios
+                   // return JSON.parse(JSON.stringify(users));
+                    return await Pelicula.find();
                 } catch (error) {
                     console.log(error);
                 }
             },
             // GET BY ID
-            getMovieById: (root, args) => {
+            getMovieById: async (root, args) => {
                 try {
                     // Buscar y retornar una copia profunda de la película que coincida con él id
-                    return JSON.parse(JSON.stringify(movies.find(movie => movie.id === args.id)));
+                    //return JSON.parse(JSON.stringify(movies.find(movie => movie.id === args.id)));
+                    return await Pelicula.findById(args.id); 
                 } catch (error) {
                     console.log(error);
                 }
             },
-            getUserById: (root, args) => {
+            getUserById: async (root, args) => {
                 try {
                     // Buscar y retornar una copia profunda del usuario que coincida con él id
-                    return JSON.parse(JSON.stringify(users.find(user => user.id === args.id)));
+                    //return JSON.parse(JSON.stringify(users.find(user => user.id === args.id)));
+                    return await Usuario.findById(args.id);
                 } catch (error) {
                     console.log(error);
                 }
@@ -135,24 +150,24 @@
         },
         Mutation: {
             // CREATE
-            createMovie: (root, args) => {
+            createMovie: async (root, args) => {
                 // Verificar que los campos title, description, imageUrl y trailerUrl no estén vacíos
                 if (args.title === '' || args.description === '' || args.imageUrl === '' || args.trailerUrl === '') return 'Los campos title, description, imageUrl y trailerUrl son obligatorios';
 
                 // Verificar que la suscripción proporcionada sea 'BASICO', 'ESTANDAR' o 'PREMIUM'
                 if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return 'El paquete de suscripción debe ser BASICO, ESTANDAR o PREMIUM';
                 // Crear un nuevo objeto de tipo película
-                const newMovie = {
-                    id: generateId(),
+                const newMovie = new Pelicula({
                     title: args.title,
                     description: args.description,
+                    category: args.category,
                     subscriptionPackage: args.subscriptionPackage,
                     imageUrl: args.imageUrl,
                     trailerUrl: args.trailerUrl,
                     createdAt: new Date().toISOString()
-                };
+                });
                 // Agregar la nueva película al arreglo de películas
-                movies.push(newMovie);
+                await newMovie.save();
                 // Publicar la película creada dependiendo del paquete de suscripción
                 switch (newMovie.subscriptionPackage) {
                     case 'BASICO':
@@ -178,108 +193,128 @@
                 if (!['USER', 'ADMIN'].includes(args.type)) return 'El tipo de usuario debe ser USER o ADMIN';
 
                 // Verificar que el email no se repita
-                if (users.find(user => user.email === args.email)) return 'El email ya está en uso';
+                if (await Usuario.findOne({ email: args.email })) return 'El email ya está en uso';
 
                 // Encriptar la contraseña
                 const hashedPassword = await bcrypt.hash(args.password, 10);
 
                 // Crear un nuevo objeto de tipo usuario
-                const newUser = {
-                    id: generateId(),
+                const newUser = new Usuario({
                     name: args.name,
                     email: args.email,
                     password: hashedPassword,
                     subscriptionPackage: args.subscriptionPackage,
-                    type: args.type,
-                    createdAt: new Date().toISOString()
-                };
+                    type: args.type
+                });
                 // Agregar el nuevo usuario al arreglo de usuarios
-                users.push(newUser);
+                await newUser.save();
                 // Publicar el usuario creado
                 pubsub.publish(USER_ADDED, { userAdded: newUser });
                 // Retornar un mensaje de éxito
                 return 'Usuario creado con éxito';
             },
             // DELETE
-            deleteMovie: (root, args) => {
-                // Buscar el índice de la película que coincida con él id, si no existe retornar un mensaje de error
-                const index = movies.findIndex(movie => movie.id === args.id);
-                if (index === -1) return 'La película no existe';
-                // Filtrar todas las películas a excepción de la que se quiere eliminar, y actualizar la lista de películas
-                movies = JSON.parse(JSON.stringify(movies.filter(movie => movie.id !== args.id)));
-                // Retornar un mensaje de éxito
-                return 'Película eliminada con éxito';
+            deleteMovie: async (root, args) => {
+                try {
+                    // Buscar el índice de la película que coincida con él id, si no existe retornar un mensaje de error
+                    const deletedMovie = await Pelicula.findByIdAndDelete(args.id);
+            
+                    // Si no se encuentra ninguna película con el ID dado, retornar un mensaje de error
+                    if (!deletedMovie) {
+                        return 'La película no existe';
+                    }
+            
+                    // Retornar un mensaje de éxito
+                    return 'Película eliminada con éxito';
+                } catch (error) {
+                    // Si ocurre algún error durante el proceso de eliminación, retornar un mensaje de error
+                    console.error('Error al eliminar la película:', error);
+                    return 'Ocurrió un error al eliminar la película';
+                }
             },
-            deleteUser: (root, args) => {
-                // Buscar el índice del usuario que coincida con él id, si no existe retornar un mensaje de error
-                const index = users.findIndex(user => user.id === args.id);
-                if (index === -1) return 'El usuario no existe';
-                // Filtrar todos los usuarios a excepción del que se quiere eliminar, y actualizar la lista de usuarios
-                users = JSON.parse(JSON.stringify(users.filter(user => user.id !== args.id)));
-                // Retornar un mensaje de éxito
-                return 'Usuario eliminado con éxito';
+            deleteUser: async (root, args) => {
+                try {
+                    // Buscar el índice del usuario que coincida con él id, si no existe retornar un mensaje de error
+                    const deletedUser = await Usuario.findByIdAndDelete(args.id);
+            
+                    // Si no se encuentra ningún usuario con el ID dado, retornar un mensaje de error
+                    if (!deletedUser) {
+                        return 'El usuario no existe';
+                    }
+            
+                    // Retornar un mensaje de éxito
+                    return 'Usuario eliminado con éxito';
+                } catch (error) {
+                    // Si ocurre algún error durante el proceso de eliminación, retornar un mensaje de error
+                    console.error('Error al eliminar el usuario:', error);
+                    return 'Ocurrió un error al eliminar el usuario';
+                }
             },
             // UPDATE
-            updateMovie: (root, args) => {
-                // Buscar el índice de la película que coincida con él id, si no existe retornar un mensaje de error
-                const index = movies.findIndex(movie => movie.id === args.id);
-                if (index === -1) return 'La película no existe';
-                // Obtener la información de los argumentos
-                const { title, description, subscriptionPackage, imageUrl, trailerUrl } = args;
-                // Actualizar la información de la película
-                movies[index] = {
-                    ...movies[index],
-                    title: title || movies[index].title,
-                    description: description || movies[index].description,
-                    subscriptionPackage: subscriptionPackage || movies[index].subscriptionPackage,
-                    imageUrl: imageUrl || movies[index].imageUrl,
-                    trailerUrl: trailerUrl || movies[index].trailerUrl
-                };
-                // Retornar un mensaje de éxito
-                return 'Película actualizada con éxito';
-            },
-            updateUser: async (root, args) => {
-                // Buscar el índice del usuario que coincida con él id, si no existe retornar un mensaje de error
-                const index = users.findIndex(user => user.id === args.id);
-                if (index === -1) return 'El usuario no existe';
-                // Obtener la información de los argumentos
-                const { name, email, password, subscriptionPackage } = args;
-
-                // Encriptar la nueva contraseña si se proporciona
-                let hashedPassword = users[index].password;
-                if (password) {
-                    hashedPassword = await bcrypt.hash(password, 10);
+            updateMovie: async (root, args) => {
+                try {
+                    // Buscar y actualizar la película por su ID
+                    const updatedMovie = await Pelicula.findByIdAndUpdate(args.id, args, { new: true });
+            
+                    // Si no se encuentra ninguna película con el ID dado, retornar un mensaje de error
+                    if (!updatedMovie) {return 'La película no existe';}
+            
+                    // Retornar un mensaje de éxito
+                    return 'Película actualizada con éxito';
+                } catch (error) {
+                    // Si ocurre algún error durante el proceso de actualización, retornar un mensaje de error
+                    console.error('Error al actualizar la película:', error);
+                    return 'Ocurrió un error al actualizar la película';
                 }
-                
-                // Actualizar la información del usuario
-                users[index] = {
-                    ...users[index],
-                    name: name || users[index].name,
-                    email: email || users[index].email,
-                    password: hashedPassword || users[index].password,
-                    subscriptionPackage: subscriptionPackage || users[index].subscriptionPackage
-                };
-                // Retornar un mensaje de éxito
-                return 'Usuario actualizado con éxito';
-            },
+            }
+            ,
+            updateUser: async (root, args) => {
+                try {
+                    // Buscar y actualizar el usuario por su ID
+                    const user = await Usuario.findById(args.id);
+            
+                    // Si no se encuentra ningún usuario con el ID dado, retornar un mensaje de error
+                    if (!user) {
+                        return 'El usuario no existe';
+                    }
+            
+                    // Actualizar la información del usuario con los nuevos valores proporcionados
+                    if (args.name) {user.name = args.name;}
+                    if (args.email) {user.email = args.email;}
+                    // Encriptar la nueva contraseña
+                    if (args.password) {user.password = await bcrypt.hash(args.password, 10);}
+                    if (args.subscriptionPackage) {user.subscriptionPackage = args.subscriptionPackage;}
+            
+                    // Guardar los cambios en la base de datos
+                    await user.save();
+            
+                    // Retornar un mensaje de éxito
+                    return 'Usuario actualizado con éxito';
+                } catch (error) {
+                    // Si ocurre algún error durante el proceso de actualización, retornar un mensaje de error
+                    console.error('Error al actualizar el usuario:', error);
+                    return 'Ocurrió un error al actualizar el usuario';
+                }
+            },            
             // LOGIN
             login: async (root, args) => {
-                // Buscar un usuario que coincida con el email proporcionado
-                const user = users.find(user => user.email === args.email);
-            
-                // Si no se encuentra un usuario, retornar un mensaje de error
-                if (!user) return 'Credenciales incorrectas';
-            
-                // Verificar la contraseña
-                const isPasswordValid = await bcrypt.compare(args.password, user.password);
-            
-                // Si la contraseña no es válida, retornar un mensaje de error
-                if (!isPasswordValid) return 'Credenciales incorrectas';
-            
-                // Retornar el usuario encontrado si las credenciales son correctas
-                return 'Inicio correctamente el usuario';
-            }
-            
+                try {
+                    // Buscar un usuario que coincida con el email proporcionado en la base de datos
+                    const user = await Usuario.findOne({ email: args.email });
+                    // Si no se encuentra un usuario con el email proporcionado, retornar un mensaje de error
+                    if (!user) {return 'Credenciales incorrectas';}
+                    // Verificar la contraseña utilizando bcrypt
+                    const isPasswordValid = await bcrypt.compare(args.password, user.password);
+                    // Si la contraseña no es válida, retornar un mensaje de error
+                    if (!isPasswordValid) {return 'Credenciales incorrectas';}
+                    // Si las credenciales son válidas, retornar un mensaje de éxito junto con el usuario autenticado
+                    return JSON.stringify(user);
+                } catch (error) {
+                    // Si ocurre algún error durante el proceso de autenticación, retornar un mensaje de error
+                    console.error('Error al iniciar sesión:', error);
+                    return 'Ocurrió un error al iniciar sesión';
+                }
+            }            
         },
         Subscription: {
             movieAdded: {

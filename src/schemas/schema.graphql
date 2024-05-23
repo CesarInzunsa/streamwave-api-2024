@@ -26,6 +26,8 @@ type Query {
     # GET ALL USERS
     getAllUsers: [User!]!
 
+    getAllMovies: [Movie!]!
+
     # GET MOVIE BY ID
     getMovieById(id: ID!): Movie!
 
