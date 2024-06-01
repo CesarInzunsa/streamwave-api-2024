@@ -41,6 +41,19 @@ const STANDARD_MOVIE_ADDED = 'STANDARD_MOVIE_ADDED';
 const PREMIUM_MOVIE_ADDED = 'PREMIUM_MOVIE_ADDED';
 
 const resolvers = {
+    LoginResult: {
+        __resolveType(obj, context, info) {
+            if (obj.message) {
+                return 'LoginError';
+            }
+
+            if (obj.email) {
+                return 'User';
+            }
+
+            return null;
+        },
+    },
     Query: {
         // GET ALL
         getAllMoviesBySubscription: async (root, args) => {
@@ -48,21 +61,43 @@ const resolvers = {
                 // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
                 if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
 
-                // Retornar una copia profunda de las películas que coincidan con el subscriptionPackage
-                //return JSON.parse(JSON.stringify(movies.filter(movie => movie.subscriptionPackage === args.subscriptionPackage)));
-                return await Pelicula.find({subscriptionPackage: args.subscriptionPackage});
+                // Si el argumento subscriptionPackage es 'BASICO', retornar las películas de ese plan
+                if (args.subscriptionPackage === 'BASICO') {
+                    return await Pelicula.find({subscriptionPackage: 'BASICO'});
+                }
+
+                // Si el argumento subscriptionPackage es 'ESTANDAR', retornar una las películas de ese plan y las de 'BASICO'
+                if (args.subscriptionPackage === 'ESTANDAR') {
+                    return await Pelicula.find({subscriptionPackage: {$in: ['BASICO', 'ESTANDAR']}});
+                }
+
+                // Si el argumento subscriptionPackage es 'ESTANDAR', retornar una las películas de ese plan y las de 'BASICO'
+                if (args.subscriptionPackage === 'PREMIUM') {
+                    return await Pelicula.find({subscriptionPackage: {$in: ['BASICO', 'ESTANDAR', 'PREMIUM']}});
+                }
             } catch (error) {
                 console.log(error);
             }
         },
         getMoviesByCategory: async (root, args) => {
             try {
-
                 // Si el argumento subscriptionPackage no es 'BASICO', 'ESTANDAR, 'PREMIUM', retornar un arreglo vacío
                 if (!['BASICO', 'ESTANDAR', 'PREMIUM'].includes(args.subscriptionPackage)) return [];
 
-                // Retornar una copia profunda de las películas que coincidan con la categoría proporcionada
-                return await Pelicula.find({category: args.category, subscriptionPackage: args.subscriptionPackage});
+                // Si el argumento subscriptionPackage es 'BASICO', retornar las películas de ese plan
+                if (args.subscriptionPackage === 'BASICO') {
+                    return await Pelicula.find({category: args.category, subscriptionPackage: 'BASICO'});
+                }
+
+                // Si el argumento subscriptionPackage es 'ESTANDAR', retornar una las películas de ese plan y las de 'BASICO'
+                if (args.subscriptionPackage === 'ESTANDAR') {
+                    return await Pelicula.find({category: args.category, subscriptionPackage: {$in: ['BASICO', 'ESTANDAR']}});
+                }
+
+                // Si el argumento subscriptionPackage es 'ESTANDAR', retornar una las películas de ese plan y las de 'BASICO'
+                if (args.subscriptionPackage === 'PREMIUM') {
+                    return await Pelicula.find({category: args.category, subscriptionPackage: {$in: ['BASICO', 'ESTANDAR', 'PREMIUM']}});
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -263,26 +298,38 @@ const resolvers = {
             }
         },
         // LOGIN
-        login: async (root, args) => {
+        login: async (_, { email, password }) => {
             try {
                 // Buscar un usuario que coincida con el email proporcionado en la base de datos
-                const user = await Usuario.findOne({email: args.email});
+                const user = await Usuario.findOne({email: email});
+
                 // Si no se encuentra un usuario con el email proporcionado, retornar un mensaje de error
                 if (!user) {
-                    return 'Credenciales incorrectas';
+                    return {
+                        success: false,
+                        message: 'Credenciales incorrectas',
+                    }
                 }
                 // Verificar la contraseña utilizando bcrypt
-                const isPasswordValid = await bcrypt.compare(args.password, user.password);
+                const isPasswordValid = await bcrypt.compare(password, user.password);
+
                 // Si la contraseña no es válida, retornar un mensaje de error
                 if (!isPasswordValid) {
-                    return 'Credenciales incorrectas';
+                    return {
+                        success: false,
+                        message: 'Credenciales incorrectas',
+                    }
                 }
+
                 // Si las credenciales son válidas, retornar un mensaje de éxito junto con el usuario autenticado
-                return JSON.stringify(user);
+                return user
             } catch (error) {
                 // Si ocurre algún error durante el proceso de autenticación, retornar un mensaje de error
                 console.error('Error al iniciar sesión:', error);
-                return 'Ocurrió un error al iniciar sesión';
+                return {
+                    success: false,
+                    message: 'Ocurrió un error al iniciar sesión',
+                }
             }
         }
     },
