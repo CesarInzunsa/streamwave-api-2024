@@ -33,6 +33,7 @@ Usuario 1 con paquete PREMIUM
 Usuario 2 con paquete BASICO  
 - Usuario: example@example.com
 - Contraseña: admin123
+- Paquete: BASICO
 
 # APIs
 
