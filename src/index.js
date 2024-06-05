@@ -15,6 +15,7 @@ import cors from 'cors';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
 import bcrypt from 'bcryptjs';
 import {Pelicula, Usuario} from './db.js';
+import dotenv from 'dotenv';
 
 
 // |----------------------------------------------------------------------------------------------------------------|
@@ -25,8 +26,11 @@ function generateId() {
     return uuidv4().replace(/-/g, "").substring(0, 24);
 }
 
+// inicializar dotenv
+dotenv.config();
+
 // Puerto en el que se ejecutará el servidor
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Lee el esquema GraphQL desde un archivo externo
 const typeDefs = readFileSync('./src/schemas/schema.graphql', 'utf8');
