@@ -29,7 +29,8 @@ Usuario 1 con paquete PREMIUM
 - Usuario: juanito@example.com
 - Contraseña: 123456
 - Paquete: PREMIUM
-Usuario 2 con paquete BASICO
+
+Usuario 2 con paquete BASICO  
 - Usuario: example@example.com
 - Contraseña: admin123
 
