@@ -7,7 +7,11 @@ Instituto Recnologico de Tepic
 - Guzmán Álvarez Jorge Alberto - 20400751
 - Inzunsa Diaz Cesar Alejandro - 19400595
 - Rodriguez Godinez Alan Daniel - 20400812
-- Zuñiga Lopez Brandon Jesus - 20400844 
+- Zuñiga Lopez Brandon Jesus - 20400844
+
+# Despliegue
+- GraphQL: https://streamwave-api-2024.onrender.com/graphql
+- Suscripciones: ws://https://streamwave-api-2024.onrender.com/graphql 
 
 # Introducción
 Este sistema se creo en base a nuestra propuesta la cual fue crear un servicios de streaming de peliculas, en este sistema los usuarios pueden registrarse e iniciar sesión para entrar a ver las peliculas dependiendo del tipo de paquete que se haya seleccionado.
