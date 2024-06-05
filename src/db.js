@@ -1,7 +1,10 @@
 // db.js
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const conexionMongo = 'mongodb+srv://brjezunigalo:lQxobbMphx7HAGO6@streamwavebd.jhle5xh.mongodb.net/StreamWave?retryWrites=true&w=majority&appName=streamWaveBD';
+dotenv.config();
+
+const conexionMongo = process.env.MONGO_URI;
 
 mongoose.connect(conexionMongo, {
     useNewUrlParser: true,
