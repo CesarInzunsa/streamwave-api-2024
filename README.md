@@ -1,66 +1,65 @@
 
-Proyecto final - StreamWave (BackEnd)  
+Final Project - StreamWave (BackEnd)  
 Desarrollo de servicios web  
 Instituto Recnologico de Tepic
 
-# Integrantes
+# Members
 - Guzmán Álvarez Jorge Alberto - 20400751
 - Inzunsa Diaz Cesar Alejandro - 19400595
 - Rodriguez Godinez Alan Daniel - 20400812
 - Zuñiga Lopez Brandon Jesus - 20400844
 
-# Despliegue
+# Deployment
 - GraphQL: https://streamwave-api-2024.onrender.com/graphql
-- Suscripciones: ws://https://streamwave-api-2024.onrender.com/graphql 
+- Subscriptions: ws://https://streamwave-api-2024.onrender.com/graphql 
 
-# Introducción
-Este sistema se creo en base a nuestra propuesta la cual fue crear un servicios de streaming de peliculas, en este sistema los usuarios pueden registrarse e iniciar sesión para entrar a ver las peliculas dependiendo del tipo de paquete que se haya seleccionado.
-Otro tipo de usuario que puede interactuar en este sistema son los administradores, como administrador tienes la posibilidad de agregar, modificar o eliminar clientes o peliculas segun lo que se vea necesario.
-Las peliculas consisten en su titulo, descripcion, imagen, trailer, categoria y paquete.
+# Introduction
+This system was created based on our proposal which was to create a movie streaming service, in this system users can register and log in to watch movies depending on the type of package that has been selected.
+Another type of user that can interact in this system are the administrators, as an administrator you have the possibility to add, modify or delete clients or movies as necessary.
+The movies consist of their title, description, image, trailer, category and package.
 
-De manera general nuestro objetivo fue poner en prueba todo lo que hemos aprendido en la materia por lo que utilizaremos GraphQL haciendo uso de las consultas, mutaciones y suscripciones.
+In general, our objective was to test everything we have learned in the subject, so we will use GraphQL making use of queries, mutations and subscriptions.
 
-A traves de este documento nos centraremos en el backend y mostraremos las diversas operaciones que pueden realizar nuestro sistema y como consumir las API de manera efectiva.
+Through this document we will focus on the backend and show the various operations that our system can perform and how to consume the APIs effectively.
 
-Cabe mencionar que nuestro proyecto esta conectado a una base de datos en mongo Atlas el cual su conexion es establecida en el archivo src/db.js
+It should be mentioned that our project is connected to a database in mongo Atlas which its connection is established in the src/db.js file
 
-# Usuario de tipo ADMIN de prueba para utilizar en la apk
-- Usuario: cesar@streamwave.com
-- Contraseña: admin123
+# Test ADMIN type user to use in the apk
+- User: cesar@streamwave.com
+- Password: admin123
 
-# Usuario de tipo USER de prueba para utilizar en la apk
-Usuario 1 con paquete PREMIUM
-- Usuario: juanito@example.com
-- Contraseña: 123456
-- Paquete: PREMIUM
-
-Usuario 2 con paquete BASICO  
-- Usuario: example@example.com
-- Contraseña: admin123
-- Paquete: BASICO
+# Test USER type user to use in the apk
+User 1 with PREMIUM package
+- User: juanito@example.com
+- Password: 123456
+- Package: PREMIUM
+User 2 with BASIC package  
+- User: example@example.com
+- Password: admin123
+- Package: BASIC
 
 # APIs
 
-Todas las APIs fueron desarrolladas en graphQL
+All APIs were developed in graphQL
 
 ## Querys
 ### getAllMovies
-Obtener todas las películas agregadas en la base de datos
+Get all movies added to the database
 
-Esta petición retorna la información deseada sobre todas las películas que estén agregadas en la base de datos.
+This request returns the desired information about all the movies that are added to the database.
 
-| Campo               | Tipo    | Descripción                                                      |
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| category            | String  | Categoría de la película                                         |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo                |
-| description         | String  | Sinopsis de la película                                          |
-| id                  | ID      | ID generado de la película                                       |
-| imageUrl            | String  | URL de la portada de la película                                 |
-| subscriptionPackage | String  | Nombre del paquete/suscripción                                   |
-| title               | String  | Título de la película                                            |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube (ej. abc123) |
+| category            | String  | Movie category                                                   |
+| createdAt           | String  | Date the movie was added to the catalog                          |
+| description         | String  | Movie synopsis                                                   |
+| id                  | ID      | Generated movie ID                                               |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the package/subscription                                 |
+| title               | String  | Movie title                                                      |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube (e.g. abc123)|
 
-Los campos son, por decirlo de alguna manera, los filtros; la información que se nos retorne tendrá que ver con los campos seleccionados.
+The fields are, so to speak, the filters; the information that is returned to us will have to do with the selected fields.
 
 ```graphql
 query ExampleQuery {
@@ -78,32 +77,31 @@ query ExampleQuery {
 ```
 
 ### getAllMoviesBySubscription
-Obtener todas las películas por suscripción
+Get all movies by subscription
 
-Esta petición retorna la información de las películas que se pueden ver dependiendo de la suscripción o paquete elegido (BASICO|ESTANDAR|PREMIUM).
+This request returns the information of the movies that can be watched depending on the chosen subscription or package (BASIC|STANDARD|PREMIUM).
 
 #### Variables:
-| Campo                | Tipo    | Descripción                        |
+| Field                | Type    | Description                        |
 |----------------------|---------|------------------------------------|
-| subscriptionPackage  | String  | Nombre del paquete/suscripción (obligatorio) |
-
-#### Campos:
-| Campo               | Tipo    | Descripción                                                      |
+| subscriptionPackage  | String  | Name of the package/subscription (mandatory) |
+#### Fields:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| category            | String  | Categoría de la película                                         |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo                |
-| description         | String  | Sinopsis de la película                                          |
-| id                  | ID      | ID generado de la película                                       |
-| imageUrl            | String  | URL de la portada de la película                                 |
-| subscriptionPackage | String  | Nombre del paquete/suscripción                                   |
-| title               | String  | Título de la película                                            |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube (ej. abc123) |
+| category            | String  | Movie category                                                   |
+| createdAt           | String  | Date the movie was added to the catalog                          |
+| description         | String  | Movie synopsis                                                   |
+| id                  | ID      | Generated movie ID                                               |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the package/subscription                                 |
+| title               | String  | Movie title                                                      |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube (e.g. abc123)|
 
-En cuanto a los campos, se puede observar que ninguno es obligatorio ya que sirven como filtro para la información que se desea retornar. Sin embargo, es necesario seleccionar al menos uno para que retorne la información.
+Regarding the fields, it can be seen that none are mandatory as they serve as a filter for the information that is desired to be returned. However, at least one must be selected for it to return the information.
 
-En cuanto a las variables, nos referimos a un parámetro que es necesario insertar un valor para que funcione. En este caso, al ser uno de los paquetes, solo se aceptan los valores "BASICO", "ESTANDAR" y "PREMIUM".
+Regarding the variables, we refer to a parameter that is necessary to insert a value for it to work. In this case, being one of the packages, only the values "BASIC", "STANDARD" and "PREMIUM" are accepted.
 
-Ejemplo de uso:
+Example of use:
 ```graphql
 query GetAllMoviesBySubscription($subscriptionPackage: String!) {
   getAllMoviesBySubscription(subscriptionPackage: $subscriptionPackage) {
@@ -125,31 +123,30 @@ query GetAllMoviesBySubscription($subscriptionPackage: String!) {
 ```
 
 ### getMoviesByCategory
-Obtener todas las películas por categoría
+Get all movies by category
 
-Esta petición retorna la información de todas las películas tanto por su categoría así como el paquete seleccionado.
-
+This request returns the information of all the movies both by their category and the selected package.
 #### Variables:
-| Campo                | Tipo    | Descripción                        |
+| Field                | Type    | Description                        |
 |----------------------|---------|------------------------------------|
-| subscriptionPackage  | String  | Nombre del paquete/suscripción (obligatorio) |
-| category             | String  | Categoría de las películas (obligatorio)     |
+| subscriptionPackage  | String  | Name of the package/subscription (mandatory) |
+| category             | String  | Category of the movies (mandatory)     |
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Fields:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| category            | String  | Categoría de la película                                         |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo                |
-| description         | String  | Sinopsis de la película                                          |
-| id                  | ID      | ID generado de la película                                       |
-| imageUrl            | String  | URL de la portada de la película                                 |
-| subscriptionPackage | String  | Nombre del paquete/suscripción                                   |
-| title               | String  | Título de la película                                            |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube (ej. abc123) |
+| category            | String  | Movie category                                                   |
+| createdAt           | String  | Date the movie was added to the catalog                          |
+| description         | String  | Movie synopsis                                                   |
+| id                  | ID      | Generated movie ID                                               |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the package/subscription                                 |
+| title               | String  | Movie title                                                      |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube (e.g. abc123)|
 
-Igual que en las querys anteriores, las variables son parámetros obligatorios. En este caso, son dos los que se deben insertar para que funcione correctamente: el paquete puede ser "BASICO", "ESTANDAR" o "PREMIUM" mientras que la categoría puede ser "Drama", "Terror", "Acción", "Comedia" o "Crimen". Los campos son la información que se desea retornar.
+Just like in the previous queries, the variables are mandatory parameters. In this case, two must be inserted for it to work correctly: the package can be "BASIC", "STANDARD" or "PREMIUM" while the category can be "Drama", "Horror", "Action", "Comedy" or "Crime". The fields are the information that is desired to be returned.
 
-Ejemplo de uso:
+Example of use:
 ```graphql
 query GetMoviesByCategory($category: String!, $subscriptionPackage: String!) {
   getMoviesByCategory(
@@ -177,32 +174,32 @@ query GetMoviesByCategory($category: String!, $subscriptionPackage: String!) {
 
 
 ### getMovieById
-Obtener película por su ID
+Get movie by its ID
 
-Esta petición retorna la información de una película en específico la cual debe ser seleccionada mediante su ID.
+This request returns the information of a specific movie which must be selected by its ID.
 
 #### Variables:
-| Campo  | Tipo | Descripción                    |
+| Field  | Type | Description                    |
 |--------|------|--------------------------------|
-| id     | ID   | ID generado de la película (obligatorio) |
+| id     | ID   | Generated movie ID (mandatory) |
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Fields:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| category            | String  | Categoría de la película                                         |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo                |
-| description         | String  | Sinopsis de la película                                          |
-| id                  | ID      | ID generado de la película                                       |
-| imageUrl            | String  | URL de la portada de la película                                 |
-| subscriptionPackage | String  | Nombre del paquete/suscripción                                   |
-| title               | String  | Título de la película                                            |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube (ej. abc123) |
+| category            | String  | Movie category                                                   |
+| createdAt           | String  | Date the movie was added to the catalog                          |
+| description         | String  | Movie synopsis                                                   |
+| id                  | ID      | Generated movie ID                                               |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the package/subscription                                 |
+| title               | String  | Movie title                                                      |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube (e.g. abc123)|
 
-En este caso, el parámetro es el ID de la película, el cual es generado automáticamente por el programa.
+In this case, the parameter is the ID of the movie, which is automatically generated by the program.
 
-Al ser una película, todos los campos son los mismos que en las querys anteriores.
+Being a movie, all fields are the same as in the previous queries.
 
-Ejemplo de uso:
+Example of use:
 ```graphql
 query GetMovieById($getMovieByIdId: ID!) {
   getMovieById(id: $getMovieByIdId) {
@@ -224,22 +221,21 @@ query GetMovieById($getMovieByIdId: ID!) {
 ```
 
 ### getAllUsers
-Obtener todos los usuarios
+Get all users
 
-Esta petición retorna la información deseada de todos los usuarios registrados en la base de datos.
-
-#### Campos:
-| Campo               | Tipo    | Descripción                                                      |
+This request returns the desired information of all users registered in the database.
+#### Fields:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| id                  | ID      | ID generado del usuario                                          |
-| name                | String  | Nombre del usuario                                               |
-| email               | String  | Correo electrónico del usuario                                   |
-| password            | String  | Contraseña del usuario                                           |
-| subscriptionPackage | String  | Nombre del paquete seleccionado por el usuario                   |
-| type                | String  | Tipo de usuario, ya sea "usuario" o "administrador"              |
-| createdAt           | String  | Fecha en la que se creó el usuario                               |
+| id                  | ID      | Generated user ID                                                |
+| name                | String  | User name                                                        |
+| email               | String  | User email                                                       |
+| password            | String  | User password                                                    |
+| subscriptionPackage | String  | Name of the package selected by the user                         |
+| type                | String  | Type of user, either "user" or "administrator"                   |
+| createdAt           | String  | Date the user was created                                        |
 
-Esta petición no requiere de parámetros. Sin embargo, al ser otro modelo, sus campos son diferentes, aunque sigue funcionando igual que las demás.
+This request does not require parameters. However, being another model, its fields are different, although it still works the same as the others.
 
 ```graphql
 query GetAllUsers {
@@ -257,29 +253,29 @@ query GetAllUsers {
 
 
 ### getUserById
-Obtener usuario por ID
+Get user by ID
 
-Esta petición retorna la información deseada de algún usuario en específico mediante su ID.
+This request returns the desired information of a specific user through their ID.
 
 #### Variables:
-| Campo | Tipo | Descripción                    |
+| Field | Type | Description                    |
 |-------|------|--------------------------------|
-| id    | ID   | ID generado del usuario (obligatorio) |
+| id    | ID   | Generated user ID (mandatory) |
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Fields:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| id                  | ID      | ID del usuario                                                   |
-| name                | String  | Nombre del usuario                                               |
-| email               | String  | Correo electrónico del usuario                                   |
-| password            | String  | Contraseña del usuario                                           |
-| subscriptionPackage | String  | Nombre del paquete seleccionado por el usuario                   |
-| type                | String  | Tipo de usuario, ya sea "usuario" o "administrador"              |
-| createdAt           | String  | Fecha en la que se creó el usuario                               |
+| id                  | ID      | User ID                                                          |
+| name                | String  | User name                                                        |
+| email               | String  | User email                                                       |
+| password            | String  | User password                                                    |
+| subscriptionPackage | String  | Name of the package selected by the user                         |
+| type                | String  | Type of user, either "user" or "administrator"                   |
+| createdAt           | String  | Date when the user was created                                   |
 
-Esta petición solo cambia en que se necesita un parámetro, el cual es el ID del usuario.
+This request only changes in that it requires a parameter, which is the user ID.
 
-Ejemplo de uso:
+Example of use:
 ```graphql
 query GetUserById($getUserByIdId: ID!) {
   getUserById(id: $getUserByIdId) {
@@ -302,23 +298,23 @@ query GetUserById($getUserByIdId: ID!) {
 
 ## Mutations
 ### createMovie
-Crear una película
+Create a Movie
 
-En esta mutación se creará una película y se agregará a la base de datos al insertar los datos correspondientes.
+In this mutation, a movie will be created and added to the database by inserting the corresponding data.
 
-#### Argumentos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Arguments:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| title               | String  | Título de la película (obligatorio)                              |
-| description         | String  | Sinopsis de la película (obligatorio)                            |
-| category            | String  | Categoría de la película (obligatorio)                           |
-| subscriptionPackage | String  | Paquete al que será añadida la película (obligatorio)            |
-| imageUrl            | String  | URL de la imagen que se utilizará como portada de la película (obligatorio) |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube (ej. abc123) (obligatorio) |
+| title               | String  | Title of the movie (mandatory)                                   |
+| description         | String  | Synopsis of the movie (mandatory)                                |
+| category            | String  | Category of the movie (mandatory)                                |
+| subscriptionPackage | String  | Package to which the movie will be added (mandatory)             |
+| imageUrl            | String  | URL of the image to be used as the movie cover (mandatory)       |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube (e.g. abc123) (mandatory) |
 
-Al ser una mutación en la cual se agrega una nueva película, todos los parámetros son necesarios para su funcionalidad. En caso de que no se agregue información en alguno de los campos, se mostrará un error ya que no se permiten campos vacíos.
+As this is a mutation in which a new movie is added, all parameters are necessary for its functionality. If information is not added in any of the fields, an error will be displayed as empty fields are not allowed.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation CreateMovie(
   $title: String!
@@ -351,22 +347,22 @@ mutation CreateMovie(
 ```
 
 ### createUser
-Crear un usuario
+Create a User
 
-En esta mutación se creará un usuario el cual será agregado a la base de datos después de insertar toda la información necesaria.
+In this mutation, a user will be created and added to the database after inserting all the necessary information.
 
-#### Argumentos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Arguments:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| name                | String  | Nombre del usuario (obligatorio)                                 |
-| email               | String  | Correo electrónico del usuario (obligatorio)                     |
-| password            | String  | Contraseña del usuario (obligatorio)                             |
-| type                | String  | Tipo de usuario, ya sea "USER" o "ADMIN" (obligatorio)           |
-| subscriptionPackage | String  | El nombre del paquete que el usuario haya seleccionado           |
+| name                | String  | User name (mandatory)                                            |
+| email               | String  | User email (mandatory)                                           |
+| password            | String  | User password (mandatory)                                        |
+| type                | String  | User type, either "USER" or "ADMIN" (mandatory)                  |
+| subscriptionPackage | String  | The name of the package that the user has selected               |
 
-Esta mutación agrega un nuevo usuario a la base de datos, por lo que todos los parámetros son obligatorios para su correcto funcionamiento. Esta mutación no acepta campos vacíos, por lo que mostrará un error en caso de que no encuentre información registrada.
+This mutation adds a new user to the database, so all parameters are mandatory for its correct operation. This mutation does not accept empty fields, so it will display an error if it does not find registered information.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation CreateUser(
   $name: String!
@@ -396,18 +392,18 @@ mutation CreateUser(
 ```
 
 ### deleteMovie
-Borrar una película
+Delete a Movie
 
-Esta mutación elimina una película de la base de datos mediante su ID.
+This mutation removes a movie from the database using its ID.
 
-#### Argumentos:
-| Campo | Tipo | Descripción                    |
+#### Arguments:
+| Field | Type | Description                    |
 |-------|------|--------------------------------|
-| id    | ID   | ID generado de la película (obligatorio) |
+| id    | ID   | Generated ID of the movie (mandatory) |
 
-Esta mutación solamente requiere de un parámetro, el cual es el ID, ya que en este caso es la forma más sencilla de encontrar una película y así mismo eliminar toda la información de la misma.
+This mutation only requires one parameter, which is the ID, as this is the simplest way to find a movie and thus eliminate all its information.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation DeleteMovie($deleteMovieId: ID!) {
   deleteMovie(id: $deleteMovieId)
@@ -420,18 +416,18 @@ mutation DeleteMovie($deleteMovieId: ID!) {
 ```
 
 ### deleteUser
-Borrar un usuario
+Delete a User
 
-Esta mutación elimina un usuario de la base de datos mediante su ID.
+This mutation removes a user from the database using their ID.
 
-#### Argumentos:
-| Campo | Tipo | Descripción                    |
+#### Arguments:
+| Field | Type | Description                    |
 |-------|------|--------------------------------|
-| id    | ID   | ID generado del usuario (obligatorio) |
+| id    | ID   | Generated ID of the user (mandatory) |
 
-Igualmente, al ser una eliminación, solamente se requiere de la ID del usuario para ser encontrado y después eliminado de la base de datos.
+Similarly, as this is a deletion, only the user's ID is required to find and then remove them from the database.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation DeleteUser($deleteUserId: ID!) {
   deleteUser(id: $deleteUserId)
@@ -444,24 +440,24 @@ mutation DeleteUser($deleteUserId: ID!) {
 ```
 
 ### updateMovie
-Modificar una película
+Modify a Movie
 
-Esta mutación nos permite actualizar los datos de una película en específico mediante su ID.
+This mutation allows us to update the data of a specific movie using its ID.
 
-#### Argumentos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Arguments:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| id                  | ID      | ID generado de la película (obligatorio)                         |
-| category            | String  | Categoría de la película (obligatorio)                           |
-| description         | String  | Sinopsis de la película (obligatorio)                            |
-| imageUrl            | String  | URL de la portada de la película (obligatorio)                   |
-| subscriptionPackage | String  | Nombre del paquete/suscripción (obligatorio)                     |
-| title               | String  | Título de la película (obligatorio)                              |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube (ej. abc123) (obligatorio) |
+| id                  | ID      | Generated ID of the movie (mandatory)                            |
+| category            | String  | Category of the movie (mandatory)                                |
+| description         | String  | Synopsis of the movie (mandatory)                                |
+| imageUrl            | String  | URL of the movie cover (mandatory)                               |
+| subscriptionPackage | String  | Name of the subscription/package (mandatory)                     |
+| title               | String  | Title of the movie (mandatory)                                   |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube (e.g. abc123) (mandatory) |
 
-Esta petición nos da la posibilidad de modificar los datos de una película en específico en caso de que se requiera, comúnmente por un error. Esta mutación también requiere de todos los campos mencionados anteriormente para su correcto funcionamiento.
+This request gives us the possibility to modify the data of a specific movie if required, commonly due to an error. This mutation also requires all the fields mentioned above for its correct operation.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation UpdateMovie(
   $updateMovieId: ID!
@@ -496,22 +492,22 @@ mutation UpdateMovie(
 ```
 
 ### updateUser
-Actualizar usuario
+Update User
 
-Esta mutación permite modificar los datos de un usuario registrado en la base de datos mediante su ID.
+This mutation allows us to modify the data of a registered user in the database using their ID.
 
-#### Argumentos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Arguments:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| id                  | ID      | ID del usuario (obligatorio)                                     |
-| name                | String  | Nombre del usuario (obligatorio)                                 |
-| email               | String  | Correo electrónico del usuario (obligatorio)                     |
-| password            | String  | Contraseña del usuario (obligatorio)                             |
-| subscriptionPackage | String  | Nombre del paquete seleccionado por el usuario (obligatorio)     |
+| id                  | ID      | User ID (mandatory)                                              |
+| name                | String  | User name (mandatory)                                            |
+| email               | String  | User email (mandatory)                                           |
+| password            | String  | User password (mandatory)                                        |
+| subscriptionPackage | String  | Name of the package selected by the user (mandatory)             |
 
-Esta petición nos permite modificar la información asociada a un usuario en específico mediante su ID. Requiere de todos los campos mencionados anteriormente para funcionar correctamente.
+This request allows us to modify the information associated with a specific user through their ID. It requires all the fields mentioned above to function correctly.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation UpdateUser(
   $updateUserId: ID!
@@ -541,19 +537,19 @@ mutation UpdateUser(
 
 
 ### login
-Iniciar sesión
+Log In
 
-Esta petición permite al usuario iniciar sesión en el sistema.
+This request allows the user to log into the system.
 
-#### Argumentos:
-| Campo   | Tipo    | Descripción                                |
+#### Arguments:
+| Field   | Type    | Description                                |
 |---------|---------|--------------------------------------------|
-| email   | String  | Correo electrónico del usuario (obligatorio) |
-| password| String  | Contraseña del usuario (obligatorio)      |
+| email   | String  | User's email (mandatory)                   |
+| password| String  | User's password (mandatory)                |
 
-Al agregar los datos, nuestro sistema retornará la información del usuario. Sin embargo, la información será encriptada para una mayor seguridad.
+Upon entering the data, our system will return the user's information. However, the information will be encrypted for increased security.
 
-#### Ejemplo de uso:
+#### Example of use:
 ```graphql
 mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -581,29 +577,28 @@ mutation Login($email: String!, $password: String!) {
 ```
 
 ## Subscriptions
-
-Nota: Todas las suscripciones se deben iniciar antes que las querys/mutaciones para mostrar el resultado
+Note: All subscriptions must be initiated before the queries/mutations to display the result
 
 ### movieAdded, basicMovieAdded, standardMovieAdded, premiumMovieAdded
 
-Estas suscripciones mostraran el estado del servidor de suscripciones cuando se añada una pelicula nueva.
-Basicamente todas estas suscripciones funcionan igual, la diferencia radica en que tipo de paquete esta incluida la pelicula se mostrara, la primera suscripccion "movieAdded" mostrara todas las peliculas sin importar el paquete, sin embargo "basicMovieAdded", "standardMovieAdded", y "premiumMovieAdded" mostrara las peliculas agregadas a los paquetes "BASICO", "ESTANDAR" y "PREMIUM" respectivamente.
+These subscriptions will show the status of the subscription server when a new movie is added.
+Basically, all these subscriptions work the same, the difference lies in what type of package the movie is included in, the first subscription "movieAdded" will show all movies regardless of the package, however "basicMovieAdded", "standardMovieAdded", and "premiumMovieAdded" will show the movies added to the "BASIC", "STANDARD" and "PREMIUM" packages respectively.
 
 
 ### movieAdded
-Esta suscripción muestra el estado del servidor de suscripciones cuando se añade una nueva película.
+This subscription shows the status of the subscription server when a new movie is added.
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                            |
-|---------------------|---------|--------------------------------------------------------|
-| category            | String  | Categoría de la película                               |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo      |
-| description         | String  | Sinopsis de la película                                |
-| id                  | ID      | ID generado de la película                             |
-| imageUrl            | String  | URL de la portada de la película                       |
-| subscriptionPackage | String  | Nombre del paquete/suscripción de la película          |
-| title               | String  | Título de la película                                  |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube    |
+#### Fields:
+| Field               | Type    | Description                                                      |
+|---------------------|---------|------------------------------------------------------------------|
+| category            | String  | Category of the movie                                            |
+| createdAt           | String  | Date when the movie was added to the catalog                     |
+| description         | String  | Synopsis of the movie                                            |
+| id                  | ID      | Generated ID of the movie                                        |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the movie's subscription/package                         |
+| title               | String  | Title of the movie                                               |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube              |
 
 ```graphql
 subscription MovieAdded {
@@ -620,21 +615,21 @@ subscription MovieAdded {
 }
 ```
 
-Esta suscripción es útil para mantener a los clientes actualizados cuando se añade una nueva película al sistema.
+This subscription is useful for keeping customers updated when a new movie is added to the system.
 
 ### userAdded
-Esta suscripción muestra el estado del servidor de suscripciones cuando se añade un nuevo usuario.
+This subscription shows the status of the subscription server when a new user is added.
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                                      |
+#### Fields:
+| Field               | Type    | Description                                                      |
 |---------------------|---------|------------------------------------------------------------------|
-| id                  | ID      | ID del usuario                                                   |
-| name                | String  | Nombre del usuario                                               |
-| email               | String  | Correo electrónico del usuario                                   |
-| password            | String  | Contraseña del usuario                                           |
-| subscriptionPackage | String  | Nombre del paquete seleccionado por el usuario                   |
-| type                | String  | Tipo de usuario (usuario o administrador)                        |
-| createdAt           | String  | Fecha en la que se creó el usuario                               |
+| id                  | ID      | User ID                                                          |
+| name                | String  | User name                                                        |
+| email               | String  | User email                                                       |
+| password            | String  | User password                                                    |
+| subscriptionPackage | String  | Name of the package selected by the user                         |
+| type                | String  | Type of user (user or administrator)                             |
+| createdAt           | String  | Date when the user was created                                   |
 
 ```graphql
 subscription UserAdded {
@@ -650,23 +645,22 @@ subscription UserAdded {
 }
 ```
 
-Esta suscripción es útil para mantener a los clientes actualizados cuando se añade un nuevo usuario al sistema.
-
+This subscription is useful for keeping customers updated when a new user is added to the system.
 
 ### BasicMovieAdded
-Esta suscripción muestra el estado del servidor de suscripciones cuando se añade una nueva película al paquete básico.
+This subscription shows the status of the subscription server when a new movie is added to the basic package.
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                            |
-|---------------------|---------|--------------------------------------------------------|
-| category            | String  | Categoría de la película                               |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo      |
-| description         | String  | Sinopsis de la película                                |
-| id                  | ID      | ID generado de la película                             |
-| imageUrl            | String  | URL de la portada de la película                       |
-| subscriptionPackage | String  | Nombre del paquete/suscripción de la película          |
-| title               | String  | Título de la película                                  |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube    |
+#### Fields:
+| Field               | Type    | Description                                                      |
+|---------------------|---------|------------------------------------------------------------------|
+| category            | String  | Category of the movie                                            |
+| createdAt           | String  | Date when the movie was added to the catalog                     |
+| description         | String  | Synopsis of the movie                                            |
+| id                  | ID      | Generated ID of the movie                                        |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the movie's subscription/package                         |
+| title               | String  | Title of the movie                                               |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube              |
 
 ```graphql
 subscription BasicMovieAdded {
@@ -683,22 +677,22 @@ subscription BasicMovieAdded {
 }
 ```
 
-Esta suscripción es útil para mantener a los clientes actualizados cuando se añade una nueva película al paquete básico.
+This subscription is useful for keeping customers updated when a new movie is added to the standard package.
 
 ### StandardMovieAdded
-Esta suscripción muestra el estado del servidor de suscripciones cuando se añade una nueva película al paquete estándar.
+This subscription shows the status of the subscription server when a new movie is added to the standard package.
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                            |
-|---------------------|---------|--------------------------------------------------------|
-| category            | String  | Categoría de la película                               |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo      |
-| description         | String  | Sinopsis de la película                                |
-| id                  | ID      | ID generado de la película                             |
-| imageUrl            | String  | URL de la portada de la película                       |
-| subscriptionPackage | String  | Nombre del paquete/suscripción de la película          |
-| title               | String  | Título de la película                                  |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube    |
+#### Fields:
+| Field               | Type    | Description                                                      |
+|---------------------|---------|------------------------------------------------------------------|
+| category            | String  | Category of the movie                                            |
+| createdAt           | String  | Date when the movie was added to the catalog                     |
+| description         | String  | Synopsis of the movie                                            |
+| id                  | ID      | Generated ID of the movie                                        |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the movie's subscription/package                         |
+| title               | String  | Title of the movie                                               |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube              |
 
 ```graphql
 subscription StandardMovieAdded {
@@ -715,22 +709,22 @@ subscription StandardMovieAdded {
 }
 ```
 
-Esta suscripción es útil para mantener a los clientes actualizados cuando se añade una nueva película al paquete estándar.
+This subscription is useful for keeping customers updated when a new movie is added to the premium package.
 
 ### PremiumMovieAdded
-Esta suscripción muestra el estado del servidor de suscripciones cuando se añade una nueva película al paquete premium.
+This subscription shows the status of the subscription server when a new movie is added to the premium package.
 
-#### Campos:
-| Campo               | Tipo    | Descripción                                            |
-|---------------------|---------|--------------------------------------------------------|
-| category            | String  | Categoría de la película                               |
-| createdAt           | String  | Fecha en la que se agregó la película al catálogo      |
-| description         | String  | Sinopsis de la película                                |
-| id                  | ID      | ID generado de la película                             |
-| imageUrl            | String  | URL de la portada de la película                       |
-| subscriptionPackage | String  | Nombre del paquete/suscripción de la película          |
-| title               | String  | Título de la película                                  |
-| trailerUrl          | String  | Caracteres del URL después del signo "=" en YouTube    |
+#### Fields:
+| Field               | Type    | Description                                                      |
+|---------------------|---------|------------------------------------------------------------------|
+| category            | String  | Category of the movie                                            |
+| createdAt           | String  | Date when the movie was added to the catalog                     |
+| description         | String  | Synopsis of the movie                                            |
+| id                  | ID      | Generated ID of the movie                                        |
+| imageUrl            | String  | URL of the movie cover                                           |
+| subscriptionPackage | String  | Name of the movie's subscription/package                         |
+| title               | String  | Title of the movie                                               |
+| trailerUrl          | String  | Characters of the URL after the "=" sign on YouTube              |
 
 ```graphql
 subscription PremiumMovieAdded {
@@ -747,4 +741,4 @@ subscription PremiumMovieAdded {
 }
 ```
 
-Esta suscripción es útil para mantener a los clientes actualizados cuando se añade una nueva película al paquete premium.
+This subscription is useful for keeping customers updated when a new movie is added to the premium package.
