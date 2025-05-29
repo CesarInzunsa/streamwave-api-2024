@@ -1,0 +1,75 @@
+type Movie {
+    id: ID!
+    title: String!
+    description: String!
+    category: String!
+    subscriptionPackage: String!
+    imageUrl: String!
+    trailerUrl: String!
+    createdAt: String!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    password: String!
+    subscriptionPackage: String!
+    type: String!
+    createdAt: String!
+}
+
+type Query {
+    # GET ALL MOVIES BY SUBSCRIPTION PACKAGE
+    getAllMoviesBySubscription(subscriptionPackage: String!): [Movie!]!
+
+    # GTE ALL MOVIES BY SUBSCRIPTION PACKAGE AND CATEGORY
+    getMoviesByCategory(category: String!, subscriptionPackage: String!): [Movie!]!
+
+    # GET ALL USERS
+    getAllUsers: [User!]!
+
+    getAllMovies: [Movie!]!
+
+    # GET MOVIE BY ID
+    getMovieById(id: ID!): Movie!
+
+    # GET USER BY ID
+    getUserById(id: ID!): User!
+}
+
+type LoginError {
+  success: Boolean!
+  message: String!
+}
+
+union LoginResult = User | LoginError
+
+type Mutation {
+    # CREATE
+    createMovie(title: String!, description: String!, category: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl:String!): String!
+    createUser(name: String!, email: String!, password:String!, type:String!, subscriptionPackage:String!): String!
+
+    # DELETE MOVIE
+    deleteMovie(id: ID!): String!
+
+    # DELETE USER
+    deleteUser(id: ID!): String!
+
+    # UPDATE MOVIE
+    updateMovie(id: ID!, title: String!, description: String!, category: String!, subscriptionPackage: String!, imageUrl: String!, trailerUrl: String!): String!
+
+    # UPDATE USER
+    updateUser(id: ID!, name: String!, email: String!, password: String!, subscriptionPackage: String!): String!
+
+    # LOGIN
+    login(email: String!, password: String!): LoginResult
+}
+
+type Subscription {
+    basicMovieAdded: Movie!
+    standardMovieAdded: Movie!
+    premiumMovieAdded: Movie!
+    movieAdded: Movie!
+    userAdded: User!
+}
